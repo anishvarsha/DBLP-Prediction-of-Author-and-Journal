@@ -1,0 +1,454 @@
+library('XML')
+library('UnidecodeR')
+setwd('Desktop/')
+
+xmlParsedDoc <-  xmlRoot(xmlTreeParse('dblp.xml',getDTD = TRUE ,options=XML::DTDLOAD, useInternalNodes = TRUE))
+
+namespaceDTD <- c(soap="http://schemas.xmlsoap.org/soap/envelope/",
+        xsd="http://www.w3.org/2001/XMLSchema",
+        xsi="http://www.w3.org/2001/XMLSchema-instance",
+        sr="http://www.cuahsi.org/waterML/1.0/",
+        gsr="http://www.cuahsi.org/his/1.0/ws/")
+
+
+author = xpathSApply(xmlParsedDoc, "//article/author", xmlValue, namespaces = namespaceDTD)
+journal = xpathSApply(xmlParsedDoc, "//article/journal", xmlValue, namespaces = namespaceDTD)
+title = xpathSApply(xmlParsedDoc, "//article/title", xmlValue, namespaces = namespaceDTD)
+
+tuples = list(author, journal, title);
+
+write.csv(author, file = "authorfinal.txt", row.names = FALSE)
+write.csv(journal, file = "journalfinal.txt",row.names = FALSE)
+write.csv(title, file = "titlefinal.txt", row.names = FALSE)
+
+
+###########################################################################################33
+
+
+import re
+import string
+ifile=open('titlefinal.txt','r')
+input=ifile.read()
+ifile.close()
+formattedtext=re.sub('[^a-zA-Z \.]', ' ', input)
+finput=formattedtext.replace("."," ")
+wordlist=finput.lower().split(None)
+wfreq={}
+for word in wordlist:
+	wfreq[word]=wfreq.get(word,0)+1
+keylist=sorted(wfreq.keys())
+for word in keylist:
+   file2=open("output2.txt",'a')
+   file2.write(word+'*'+str(wfreq[word])+'\n')
+
+   
+###################################################################################   
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class TitleTokenizing {
+
+	public static void main(String[] args) throws IOException {
+		Scanner keyboard = new Scanner(System.in);
+		//System.out.print("Enter a file name: ");
+		//String filename = keyboard.nextLine();
+
+		File file1 = new File("D:/UTD Course/ML/Project/output2.txt");
+		Scanner inputFile = new Scanner(file1);
+
+		int i = 0, n, k, j;
+		ArrayList<String> arr= new ArrayList<String>();
+	//	String[] arr = new String[10000];
+	//	String[] arr1 = new String[10000];
+
+		String[] Stop = { "a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all",
+				"almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst",
+				"amoungst", "amount", "an", "and", "another", "any", "anyhow", "anyone", "anything", "anyway",
+				"anywhere", "are", "around", "as", "at", "back", "be", "became", "because", "become", "becomes",
+				"becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between",
+				"beyond", "bill", "both", "bottom", "but", "by", "call", "can", "cannot", "cant", "co", "con", "could",
+				"couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg",
+				"eight", "either", "eleven", "else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every",
+				"everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire",
+				"first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full",
+				"further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here",
+				"hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how",
+				"however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its",
+				"itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me",
+				"meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must",
+				"my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody",
+				"none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one",
+				"only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own",
+				"part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming",
+				"seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty",
+				"so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such",
+				"system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", 
+				"there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", 
+				"thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to",
+				"together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up",
+				"upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence",
+				"whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether",
+				"which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with",
+				"within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "z", "zero" };
+
+		while (inputFile.hasNext()) {
+			String line = inputFile.nextLine();
+			line = line.trim();
+			for (String retval : line.split(" ")) {
+				arr.add(i, retval);
+				
+				arr.add(i,arr.get(i).toLowerCase());
+				// System.out.println(arr[i]);
+				i++;
+			}
+		}
+		System.out.println("Array Size:" + i);
+		System.out.println("Stop Words:" + Stop.length);
+		k = Stop.length;
+		n = i;
+
+		for (i = 0; i < n; i++) {
+			for (j = 0; j < k; j++) {
+				int index= arr.get(i).indexOf('*');
+				if (arr.get(i).substring(0,index).equals(Stop[j])) {
+					arr.remove(i);
+				}
+			}
+		}
+
+		try {
+			File file = new File("output.txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+
+			for (i = 0; i < n; i++) {
+				if (!(arr.get(i).equals(""))) {
+					bw.write(arr.get(i));
+					bw.newLine();
+					if (arr.get(i).equals(".")) {
+						String newLine = System.getProperty("line.separator");
+						bw.write(newLine);
+					}
+				}
+			}
+			bw.close();
+			System.out.println("\nStop words removed and Output file created");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		inputFile.close();
+	}
+}
+
+
+##############################################################################################
+
+def title2category(map_filename, in_filename, out_filename):
+    dict = {}
+    with open(map_filename) as text:
+        for line in text:
+            word = line.split(",")
+            dict[word[0]] = word[1].rstrip("\n")
+
+    #print(dict)
+
+    import operator
+
+    with open(in_filename) as text:
+        count = 0
+        result = ""
+        for line in text:
+            title_dict = {}
+            title = line.split("|")
+            for word in title[1].split():
+                if word in dict:
+                    cat = dict[word]
+                    if cat in title_dict:
+                        title_dict[cat] += 1
+                    else:
+                        title_dict[cat] = 1
+
+            if len(title_dict)==0:
+                cat = 'Others'
+            else:
+                cat = max(title_dict.iteritems(), key=operator.itemgetter(1))[0]
+
+
+            result += title[0] + '|' + cat + "|" + title[2]
+
+            count = count + 1
+            if(count%1000==0):
+                writeFile(result, out_filename)
+                result = ""
+                print(count)
+
+        if result!="":
+            writeFile(result, out_filename)
+
+def writeFile(result, out_filename):
+    f = open(out_filename, 'a')
+    f.write(result)
+    f.close()
+
+if ( __name__ == "__main__"):
+    map_filename = "categorylookup.txt"
+    in_filename = "dblp_master.txt"
+    out_filename = "dblp_master_category.txt"
+    title2category(map_filename, in_filename, out_filename)
+
+
+####################################################################################
+
+import numpy as np
+import csv
+
+#file = open('dblp_master_category.txt', 'rU')
+#data = file.read()
+
+#for x in range(len(data)-1):
+#	for y in range(3):
+#		data[x][y] = float(data[x][y]);
+
+#print data
+dictionaryAuthor = {}
+dictionaryCategory = {}
+dictionaryJournal = {}
+totalval = []
+authorInc = 0
+journalsInc = 0
+categoryInc = 0
+
+thefile = open('listVals.txt', 'w')
+with open('dblp_master_category.txt', 'rb') as infh:
+    reader = csv.reader(infh, delimiter='|')
+    for row in reader:
+    	if row[0] in dictionaryAuthor:
+    		authorInc = authorInc+0;
+    		authorIncTemp= dictionaryAuthor.get(row[0]);
+    		row[0] = authorIncTemp
+    	else:
+    		authorInc = authorInc+1;
+    		dictionaryAuthor.update({row[0]:authorInc})
+    		row[0] = authorInc
+    	if row[1] in dictionaryCategory:
+    		categoryInc = categoryInc+0;
+    		categoryIncTemp= dictionaryCategory.get(row[1]);
+    		row[1] = categoryIncTemp;
+    	else:
+    		categoryInc = categoryInc+1;
+    		dictionaryCategory.update({row[1]:categoryInc})
+    		row[1] = categoryInc;
+
+    	if row[2] in dictionaryJournal:
+    		journalsInc = journalsInc+0;
+    		journalsIncTemp = dictionaryJournal.get(row[2]);
+    		row[2] = journalsIncTemp;
+    	else:
+    		journalsInc = journalsInc+1;
+    		dictionaryJournal.update({row[2]:journalsInc})
+    		row[2] = journalsInc;
+    	strRow1 = str(row[0])
+    	strRow2 = str(row[1])
+    	strRow3 = str(row[2])
+    	val = strRow1+'|'+strRow2+'|'+strRow3
+    	totalval.append(val)
+for item in totalval:
+  thefile.write("%s\n" % item)
+  
+##############################################################################3333
+
+ 
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+import numpy as np
+
+def dataset2Array(filename):
+    features = []
+    labels = []
+    count = 0
+    with open(filename) as text:
+        for line in text:
+            col = line.split('|')
+            features.append( [col[0],col[2]] )
+            labels.append(col[1])
+            count = count + 1
+    return features, labels
+
+def classify(train_file):
+    from datetime import datetime
+    print(str(datetime.now()))
+	
+    features, labels = dataset2Array(train_file)
+    from sklearn import cross_validation
+    X_train, X_test, y_train, y_test = cross_validation.train_test_split(
+        features, labels, test_size=0.2, random_state=42)
+
+    # from sklearn.tree import DecisionTreeClassifier
+    # clf = DecisionTreeClassifier()
+    # clf.fit(X_train, y_train)
+    # pred = clf.predict(X_test)
+
+    from sklearn.ensemble import RandomForestClassifier
+    clf = RandomForestClassifier(n_estimators=4)
+    clf.fit(X_train, y_train)
+    pred = clf.predict(X_test)
+
+    from sklearn.metrics import accuracy_score
+    print(accuracy_score(y_test, pred))
+    from sklearn.metrics import precision_recall_fscore_support
+    print(precision_recall_fscore_support(pred, y_test, average='micro'))
+
+    print(str(datetime.now()))
+
+if ( __name__ == "__main__"):
+    train_file = "C:\Users\Suraj\Desktop\UTD\SEM 4\ML\Project\listVals.txt"
+    classify(train_file)
+	
+##################################################################################3333
+
+	
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+public class GenerateProb {
+	public static void calProb(String fileName) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(new File(fileName)));
+		String line = null, author = "";
+		Map<String,Integer> map = new HashMap<String,Integer>();
+		int jCount = 0;
+		
+		String result = "";
+		while((line=br.readLine())!=null){
+			String str[] = line.split("\\|");
+			if(str[0].equals(author)){
+				if(!map.containsKey(str[1]))
+					map.put(str[1], 1);
+				else
+					map.put(str[1], map.get(str[1]) + 1);
+				jCount++;
+			}else{
+				if(!author.equals("")){
+					result += genContent(author, map, jCount);
+					if(result.length()>200000){
+						writeFile(result);
+						result = "";
+					}
+				}
+				map.clear();
+				author = str[0];
+				jCount=1;				
+				map.put(str[1], 1);
+			}
+		}
+		br.close();
+		
+		if(result.length()>0)
+			writeFile(result);
+	}
+	
+	public static String genContent(String author, Map<String,Integer> map, int jCount){
+		String result = "";
+		for(String str: map.keySet())
+			result += author+"|"+str+"|"+(map.get(str)/(double)jCount)+"\n";
+		return result;
+	}
+	
+	public static void writeFile(String result) throws IOException{
+		String fileName = "C:/Users/Suraj/Desktop/UTD/SEM 4/ML/Project/code/author_category.txt";
+		BufferedWriter br = new BufferedWriter(new FileWriter(new File(fileName), true));
+		br.write(result);
+		br.close();
+	}
+	
+	public static void main(String[] args) throws IOException {
+		calProb("C:/Users/Suraj/Desktop/UTD/SEM 4/ML/Project/code/dblp_master_category.txt");
+	}
+}
+
+
+################################################################################################
+
+case class myProb(author: String, journal: String, rating: Double)
+
+import org.apache.spark.mllib.recommendation.ALS
+import org.apache.spark.mllib.recommendation.Rating
+import org.apache.spark.rdd.RDD
+
+val rawData = sc.textFile("author_journals.txt")
+
+val data: RDD[myProb] = rawData.map(line => line.split('|').take(3)).map(array => myProb(array(0), array(1), array(2).toDouble))
+
+val authorToInt: RDD[(String, Long)] = data.map(_.author).distinct().zipWithUniqueId()
+val reverseMapping: RDD[(Long, String)] = authorToInt.map { case (l, r) => (r, l) }
+
+val journalToInt: RDD[(String, Long)] = data.map(_.journal).distinct().zipWithUniqueId()
+val reverseMappingjournal: RDD[(Long, String)] = journalToInt.map { case (l, r) => (r, l) }
+
+val dataWithUniqueauthorId: RDD[(String, Long, String, Double)] = data.keyBy(_.author).join(authorToInt).map(r => (r._2._1.author,r._2._2,r._2._1.journal,r._2._1.rating))
+
+val rawProb: RDD[(Long, Long, Double)] = dataWithUniqueauthorId.keyBy(_._3).join(journalToInt).map(r => (r._2._1._2,r._2._2, r._2._1._4))
+val ratings = rawProb.map (r => Rating(r._1.toInt, r._2.toInt, r._3))
+
+val model = ALS.train(ratings, 50, 10, 0.01)
+
+val pauthor = authorToInt.lookup("Juha Honkala").mkString.toInt
+val pjournal = journalToInt.lookup("ystems Journal").mkString.toInt
+
+val predictedRating = model.predict(pauthor,pjournal)
+
+val authorId = pauthor
+val K = 5
+val topKRecs = model.recommendProducts(authorId, K)
+println(topKRecs.mkString("\n"))
+
+
+#######################################################################
+
+case class myProb(author: String, category: String, rating: Double)
+
+import org.apache.spark.mllib.recommendation.ALS
+import org.apache.spark.mllib.recommendation.Rating
+import org.apache.spark.rdd.RDD
+
+val rawData = sc.textFile("author_category.txt")
+
+val data: RDD[myProb] = rawData.map(line => line.split('|').take(3)).map(array => myProb(array(0), array(1), array(2).toDouble))
+
+val authorToInt: RDD[(String, Long)] = data.map(_.author).distinct().zipWithUniqueId()
+val reverseMapping: RDD[(Long, String)] = authorToInt.map { case (l, r) => (r, l) }
+
+val categoryToInt: RDD[(String, Long)] = data.map(_.category).distinct().zipWithUniqueId()
+val reverseMappingcategory: RDD[(Long, String)] = categoryToInt.map { case (l, r) => (r, l) }
+
+val dataWithUniqueauthorId: RDD[(String, Long, String, Double)] = data.keyBy(_.author).join(authorToInt).map(r => (r._2._1.author,r._2._2,r._2._1.category,r._2._1.rating))
+
+val rawProb: RDD[(Long, Long, Double)] = dataWithUniqueauthorId.keyBy(_._3).join(categoryToInt).map(r => (r._2._1._2,r._2._2, r._2._1._4))
+val ratings = rawProb.map (r => Rating(r._1.toInt, r._2.toInt, r._3))
+
+val model = ALS.train(ratings, 50, 10, 0.01)
+
+val pauthor = authorToInt.lookup("Juha Honkala").mkString.toInt
+val pcategory = categoryToInt.lookup("Performance").mkString.toInt
+
+val predictedRating = model.predict(pauthor, pcategory)
+
+val authorId = pauthor
+val K = 5
+val topKRecs = model.recommendProducts(authorId, K)
+println(topKRecs.mkString("\n"))
+
